@@ -22,7 +22,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '22' # Upgraded to match Capacitor 8 requirements
+          node-version: '22'
 
       - name: Install Dependencies & Esbuild
         run: |
@@ -118,10 +118,10 @@ jobs:
           sed -i 's/minSdk .*/minSdk 24/' android/app/build.gradle
           sed -i 's/minSdkVersion .*/minSdkVersion 24/' android/app/build.gradle
 
-      - name: Set Version Code to 2
+      - name: Set Version Code and Name
         run: |
-          sed -i 's/versionCode 1/versionCode 2/' android/app/build.gradle
-          sed -i 's/versionName "1.0"/versionName "2.0"/' android/app/build.gradle
+          sed -i 's/versionCode 1/versionCode 3/' android/app/build.gradle
+          sed -i 's/versionName "1.0"/versionName "2.0.1"/' android/app/build.gradle
 
       - name: Fix Android Hardware Back Button
         run: |
@@ -137,7 +137,8 @@ jobs:
                   if (this.bridge != null && this.bridge.getWebView() != null && this.bridge.getWebView().canGoBack()) {
                       this.bridge.getWebView().goBack();
                   } else {
-                      super.onBackPressed();
+                      // Move app to background instead of closing it completely
+                      moveTaskToBack(true);
                   }
               }
           }
