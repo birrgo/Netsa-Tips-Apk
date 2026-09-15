@@ -333,6 +333,7 @@
         }
 
         // Listener for Resuming App (Background to Foreground)
+        // ONLY place the App Open ad logic will fire now.
         document.addEventListener("visibilitychange", async () => {
             if (document.visibilityState === 'visible') {
                 if (window.globalAdConfig?.placements?.appOpenAdStart && window.globalAdConfig?.appOpenId) {
@@ -414,22 +415,10 @@
         }
 
         async function triggerAppOpenAdStart() {
-            // Check sessionStorage: If true, user is just switching menu tabs, so DO NOT show ad again.
-            if (sessionStorage.getItem('shikela_app_opened') === 'true') {
-                return;
-            }
-            
-            if (window.globalAdConfig?.placements?.appOpenAdStart && window.globalAdConfig?.appOpenId) {
-                // Set the session lock so navigating tabs doesn't trigger the ad
-                sessionStorage.setItem('shikela_app_opened', 'true');
-                const AdPlugin = getAdMobPlugin();
-                if (isNativeApp() && AdPlugin) {
-                    try {
-                        await AdPlugin.loadAppOpen({ adUnitId: window.globalAdConfig.appOpenId });
-                        await AdPlugin.showAppOpen();
-                    } catch (e) {}
-                }
-            }
+            // FIXED: Prevent App Open Ad from showing purely on page load/navigation.
+            // App Open Ads will now ONLY rely on the "visibilitychange" (Resume) event listener above.
+            sessionStorage.setItem('shikela_app_opened', 'true');
+            return; 
         }
 
         async function triggerBannerAdHomePage() {
